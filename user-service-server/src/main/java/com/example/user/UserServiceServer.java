@@ -18,7 +18,7 @@ public final class UserServiceServer implements UserService {
 
     @Override
     public UserResponse create(UserRequest userRequest) throws ServiceException {
-        if (userRepository.existsByName(userRequest.name())) {
+        if (Boolean.TRUE.equals(userRepository.existsByName(userRequest.name()))) {
             throw new ServiceValidationException(UserServiceErrors.UserAlreadyExist);
         }
 
