@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -89,5 +90,17 @@ class ServiceClientTest {
         );
 
         assertEquals("Client could not communicate with the server", exception.getMessage());
+    }
+
+    @Test
+    void testCreatingQueryUri() {
+        var queryParameters = new HashMap<String, Object>();
+        queryParameters.put("name", null);
+        queryParameters.put("age", 21);
+        queryParameters.put("isAdmin", false);
+
+        var uri = serviceClient.createQueryUri(queryParameters);
+
+        assertEquals("/?isAdmin=false&age=21", uri);
     }
 }
