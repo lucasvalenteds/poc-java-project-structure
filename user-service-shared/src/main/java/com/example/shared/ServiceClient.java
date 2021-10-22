@@ -67,6 +67,7 @@ public abstract class ServiceClient {
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
             return objectMapper.readValue(response.body(), returnType);
         } catch (IOException | InterruptedException exception) {
+            Thread.currentThread().interrupt();
             throw new ServiceClientException(exception);
         }
     }
