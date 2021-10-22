@@ -11,6 +11,11 @@ find-all:
 		--header 'Content-Type: application/json' \
 		$(API_URL)/users | jq
 
+find-one:
+	@curl -X GET --silent --verbose \
+		--header 'Content-Type: application/json' \
+		$(API_URL)/users/$(ID) | jq
+
 delete:
 	@curl -X DELETE --silent --verbose \
 		--header 'Content-Type: application/json' \
