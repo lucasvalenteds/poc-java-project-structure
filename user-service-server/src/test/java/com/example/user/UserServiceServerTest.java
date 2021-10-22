@@ -71,51 +71,54 @@ class UserServiceServerTest {
     @Test
     void testRemovingWithUnknownIdThrows() {
         var userResponse = UserTestBuilder.USER_RESPONSE;
+        var userId = userResponse.id();
 
-        Mockito.when(userRepository.remove(userResponse.id()))
+        Mockito.when(userRepository.remove(userId))
             .thenThrow(new IncorrectResultSizeDataAccessException(1, 0));
 
         var exception = assertThrows(
             ServiceResourceException.class,
-            () -> userService.remove(userResponse.id())
+            () -> userService.remove(userId)
         );
 
         assertEquals("Resource not found by ID", exception.getMessage());
-        assertEquals(userResponse.id(), exception.getResourceId());
+        assertEquals(userId, exception.getResourceId());
         Mockito.verify(userRepository, Mockito.times(1))
-            .remove(userResponse.id());
+            .remove(userId);
     }
 
     @Test
     void testFindingById() {
         var userResponse = UserTestBuilder.USER_RESPONSE;
+        var userId = userResponse.id();
 
-        Mockito.when(userRepository.findById(userResponse.id()))
+        Mockito.when(userRepository.findById(userId))
             .thenReturn(userResponse);
 
-        var userFound = userService.findById(userResponse.id());
+        var userFound = userService.findById(userId);
 
         assertEquals(userResponse, userFound);
         Mockito.verify(userRepository, Mockito.times(1))
-            .findById(userResponse.id());
+            .findById(userId);
     }
 
     @Test
     void testFindingByUnknownIdThrows() {
         var userResponse = UserTestBuilder.USER_RESPONSE;
+        var userId = userResponse.id();
 
-        Mockito.when(userRepository.findById(userResponse.id()))
+        Mockito.when(userRepository.findById(userId))
             .thenThrow(new IncorrectResultSizeDataAccessException(1));
 
         var exception = assertThrows(
             ServiceResourceException.class,
-            () -> userService.findById(userResponse.id())
+            () -> userService.findById(userId)
         );
 
         assertEquals("Resource not found by ID", exception.getMessage());
-        assertEquals(userResponse.id(), exception.getResourceId());
+        assertEquals(userId, exception.getResourceId());
         Mockito.verify(userRepository, Mockito.times(1))
-            .findById(userResponse.id());
+            .findById(userId);
     }
 
     @Test
