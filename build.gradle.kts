@@ -5,35 +5,42 @@ plugins {
     jacoco
 }
 
-repositories {
-    mavenCentral()
-}
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "jacoco")
 
-dependencies {
-    implementation("org.apache.logging.log4j", "log4j-api", properties["version.log4j"].toString())
-    implementation("org.apache.logging.log4j", "log4j-core", properties["version.log4j"].toString())
-    implementation("org.slf4j", "slf4j-simple", properties["version.slf4j"].toString())
-
-    testImplementation("org.junit.jupiter", "junit-jupiter", properties["version.junit"].toString())
-}
-
-configure<JavaPluginExtension> {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-
-    testLogging {
-        events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+    repositories {
+        mavenCentral()
     }
 
-    finalizedBy(tasks.withType<JacocoReport>())
- }
+    dependencies {
+        implementation("org.apache.logging.log4j", "log4j-api", properties["version.log4j"].toString())
+        implementation("org.apache.logging.log4j", "log4j-core", properties["version.log4j"].toString())
+        implementation("org.slf4j", "slf4j-simple", properties["version.slf4j"].toString())
 
- tasks.withType<JacocoReport> {
-     reports {
-         xml.required.set(true)
-     }
- }
+        testImplementation("org.junit.jupiter", "junit-jupiter", properties["version.junit"].toString())
+        testImplementation("org.assertj", "assertj-core", properties["version.assertj"].toString())
+        testImplementation("org.mockito", "mockito-core", properties["version.mockito"].toString())
+    }
+
+    configure<JavaPluginExtension> {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+
+        testLogging {
+            events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+        }
+
+        finalizedBy(tasks.withType<JacocoReport>())
+    }
+
+    tasks.withType<JacocoReport> {
+        reports {
+            xml.required.set(true)
+        }
+    }
+}
