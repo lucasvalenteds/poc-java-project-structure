@@ -2,12 +2,11 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
-    jacoco
 }
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "jacoco")
+    apply(plugin = "com.example.shared")
 
     repositories {
         mavenCentral()
@@ -21,26 +20,5 @@ subprojects {
         testImplementation("org.junit.jupiter", "junit-jupiter", properties["version.junit"].toString())
         testImplementation("org.assertj", "assertj-core", properties["version.assertj"].toString())
         testImplementation("org.mockito", "mockito-core", properties["version.mockito"].toString())
-    }
-
-    configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    tasks.withType<Test> {
-        useJUnitPlatform()
-
-        testLogging {
-            events = setOf(TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
-        }
-
-        finalizedBy(tasks.withType<JacocoReport>())
-    }
-
-    tasks.withType<JacocoReport> {
-        reports {
-            xml.required.set(true)
-        }
     }
 }
