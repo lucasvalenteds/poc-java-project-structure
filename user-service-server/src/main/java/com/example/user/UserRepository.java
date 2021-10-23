@@ -65,7 +65,7 @@ public class UserRepository extends SQLRepository {
         var filters = new StringBuilder();
         var objects = new ArrayList<>();
         var types = new ArrayList<Integer>();
-        UserRepository.writeWhereClause(filters, objects, types, filter);
+        writeWhereClause(filters, objects, types, filter);
 
         var primitiveObjects = objects.toArray();
         var primitiveTypes = types.stream()
@@ -81,7 +81,7 @@ public class UserRepository extends SQLRepository {
         var filters = new StringBuilder();
         var objects = new ArrayList<>();
         var types = new ArrayList<Integer>();
-        UserRepository.writeWhereClause(filters, objects, types, filter);
+        writeWhereClause(filters, objects, types, filter);
 
         var primitiveObjects = objects.toArray();
         var primitiveTypes = types.stream()
@@ -100,14 +100,14 @@ public class UserRepository extends SQLRepository {
         return jdbcTemplate.queryForObject(query, objects, types, Boolean.class);
     }
 
-    private static void writeWhereClause(StringBuilder query,
+    private void writeWhereClause(StringBuilder query,
                                          List<Object> objects,
                                          List<Integer> types,
                                          UserResponseFilter filter) {
         var clauses = new ArrayList<String>();
         if (filter.getName() != null) {
             clauses.add(FIRST_NAME + " like ?");
-            objects.add(SQLRepository.toLikeFull(filter.getName()));
+            objects.add(toLikeFull(filter.getName()));
             types.add(Types.VARCHAR);
         }
 

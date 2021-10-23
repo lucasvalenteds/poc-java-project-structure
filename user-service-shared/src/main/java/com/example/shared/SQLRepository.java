@@ -5,7 +5,7 @@ public abstract class SQLRepository {
     protected SQLRepository() {
     }
 
-    protected static String toLikeFull(Object value) {
+    protected String toLikeFull(Object value) {
         return "%" + value + "%";
     }
 }

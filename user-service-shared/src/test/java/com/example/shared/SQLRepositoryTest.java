@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SQLRepositoryTest {
 
+    private final SQLRepository repository = new SQLRepositoryStub();
+
     @Test
     void testToLikeFull() {
         var value = "Smith";
 
-        var text = SQLRepository.toLikeFull(value);
+        var text = repository.toLikeFull(value);
 
         assertEquals("%Smith%", text);
     }
