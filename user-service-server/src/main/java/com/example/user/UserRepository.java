@@ -65,7 +65,7 @@ public class UserRepository extends SQLRepository {
         var filters = new StringBuilder();
         var objects = new ArrayList<>();
         var types = new ArrayList<Integer>();
-        writeWhereClause(filters, objects, types, filter);
+        writeQueryFilters(filters, objects, types, filter);
 
         var primitiveObjects = objects.toArray();
         var primitiveTypes = types.stream()
@@ -81,7 +81,7 @@ public class UserRepository extends SQLRepository {
         var filters = new StringBuilder();
         var objects = new ArrayList<>();
         var types = new ArrayList<Integer>();
-        writeWhereClause(filters, objects, types, filter);
+        writeQueryFilters(filters, objects, types, filter);
 
         var primitiveObjects = objects.toArray();
         var primitiveTypes = types.stream()
@@ -100,27 +100,25 @@ public class UserRepository extends SQLRepository {
         return jdbcTemplate.queryForObject(query, objects, types, Boolean.class);
     }
 
-    private void writeWhereClause(StringBuilder query,
-                                         List<Object> objects,
-                                         List<Integer> types,
-                                         UserResponseFilter filter) {
-        var clauses = new ArrayList<String>();
+    private void writeQueryFilters(StringBuilder query,
+                                   List<Object> objects,
+                                   List<Integer> types,
+                                   UserResponseFilter filter) {
+        var filters = new ArrayList<String>();
+
         if (filter.getName() != null) {
-            clauses.add(FIRST_NAME + " like ?");
+            filters.add(FIRST_NAME + " like ?");
             objects.add(toLikeFull(filter.getName()));
             types.add(Types.VARCHAR);
         }
 
         if (filter.getAge() != null) {
-            clauses.add(AGE + " = ?");
+            filters.add(AGE + " = ?");
             objects.add(filter.getAge());
             types.add(Types.INTEGER);
         }
 
-        if (!clauses.isEmpty()) {
-            query.append(" where ")
-                .append(String.join(" and ", clauses));
-        }
+        super.writeWhereClause(query, filters);
     }
 
     private static UserResponse mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
