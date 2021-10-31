@@ -41,18 +41,15 @@ class UserControllerTest {
     @Test
     void testRemoving() {
         var userResponse = UserTestBuilder.USER_RESPONSE;
-        Mockito.when(userService.remove(userResponse.id()))
-            .thenReturn(userResponse);
+        Mockito.doNothing()
+            .when(userService).remove(userResponse.id());
 
         webTestClient.delete()
             .uri("/users/{id}", userResponse.id())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isAccepted()
-            .expectBody()
-            .jsonPath("$.id").isEqualTo(String.valueOf(userResponse.id()))
-            .jsonPath("$.name").isEqualTo(userResponse.name())
-            .jsonPath("$.age").isEqualTo(userResponse.age());
+            .expectBody().isEmpty();
 
         Mockito.verify(userService, Mockito.times(1))
             .remove(userResponse.id());

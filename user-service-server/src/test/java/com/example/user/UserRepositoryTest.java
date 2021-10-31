@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -87,9 +88,7 @@ class UserRepositoryTest {
     @Test
     @Order(3)
     void testRemoving() {
-        var userRemoved = userRepository.remove(userInserted.id());
-
-        assertEquals(userInserted, userRemoved);
+        assertDoesNotThrow(() -> userRepository.remove(userInserted.id()));
     }
 
     @Test

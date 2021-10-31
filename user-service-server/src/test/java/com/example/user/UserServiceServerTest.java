@@ -61,12 +61,11 @@ class UserServiceServerTest {
     void testRemoving() {
         var userResponse = UserTestBuilder.USER_RESPONSE;
 
-        Mockito.when(userRepository.remove(userResponse.id()))
-            .thenReturn(userResponse);
+        Mockito.doNothing()
+            .when(userRepository).remove(userResponse.id());
 
-        var userRemoved = userService.remove(userResponse.id());
+        userService.remove(userResponse.id());
 
-        assertEquals(userResponse, userRemoved);
         Mockito.verify(userRepository, Mockito.times(1))
             .remove(userResponse.id());
     }
@@ -76,8 +75,8 @@ class UserServiceServerTest {
         var userResponse = UserTestBuilder.USER_RESPONSE;
         var userId = userResponse.id();
 
-        Mockito.when(userRepository.remove(userId))
-            .thenThrow(new IncorrectResultSizeDataAccessException(1, 0));
+        Mockito.doThrow(new IncorrectResultSizeDataAccessException(1, 0))
+            .when(userRepository).remove(userId);
 
         var exception = assertThrows(
             ServiceResourceException.class,

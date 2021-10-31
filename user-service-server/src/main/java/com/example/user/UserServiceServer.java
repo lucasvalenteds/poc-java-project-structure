@@ -27,9 +27,9 @@ public final class UserServiceServer implements UserService {
     }
 
     @Override
-    public UserResponse remove(UUID id) throws ServiceException {
+    public void remove(UUID id) throws ServiceException {
         try {
-            return userRepository.remove(id);
+            userRepository.remove(id);
         } catch (IncorrectResultSizeDataAccessException exception) {
             throw new ServiceResourceException(id, exception);
         }

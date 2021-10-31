@@ -32,8 +32,10 @@ public final class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<UserResponse> remove(@PathVariable("id") UUID id) {
+        userService.remove(id);
+
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-            .body(userService.remove(id));
+            .build();
     }
 
     @GetMapping("/{id}")

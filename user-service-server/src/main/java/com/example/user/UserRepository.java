@@ -1,7 +1,7 @@
 package com.example.user;
 
 import com.example.shared.SQLRepository;
-import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,22 +36,25 @@ public class UserRepository extends SQLRepository {
         var rowsAffected = jdbcTemplate.update(query, objects, types);
         var expectedRowsAffected = 1;
         if (rowsAffected != expectedRowsAffected) {
-            throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(query, expectedRowsAffected, rowsAffected);
+            throw new IncorrectResultSizeDataAccessException(expectedRowsAffected, rowsAffected);
         }
 
         return new UserResponse(id, name, age);
     }
 
     @Transactional
-    public UserResponse remove(UUID id) {
+    public void remove(UUID id) {
         var userResponse = findById(id);
 
         var query = "delete from " + TABLE + " where " + ID + " = ?";
-        var objects = new Object[]{id};
+        var objects = new Object[]{userResponse.id()};
         var types = new int[]{Types.VARCHAR};
-        jdbcTemplate.update(query, objects, types);
 
-        return userResponse;
+        int rowsAffected = jdbcTemplate.update(query, objects, types);
+        var expectedRowsAffected = 1;
+        if (rowsAffected != expectedRowsAffected) {
+            throw new IncorrectResultSizeDataAccessException(expectedRowsAffected, rowsAffected);
+        }
     }
 
     public UserResponse findById(UUID id) {

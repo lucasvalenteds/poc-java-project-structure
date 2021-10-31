@@ -9,7 +9,7 @@ public interface UserService {
 
     UserResponse create(UserRequest userRequest) throws ServiceException;
 
-    UserResponse remove(UUID id) throws ServiceException;
+    void remove(UUID id) throws ServiceException;
 
     UserResponse findById(UUID id) throws ServiceException;
 
