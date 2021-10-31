@@ -104,7 +104,7 @@ public class UserRepository extends SQLRepository {
         var objects = new Object[]{name};
         var types = new int[]{Types.VARCHAR};
 
-        return jdbcTemplate.queryForObject(query, objects, types, Boolean.class);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, objects, types, Boolean.class));
     }
 
     private void writeQueryFilters(StringBuilder query,
