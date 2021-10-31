@@ -34,8 +34,8 @@ public final class UserServiceClient extends ServiceClient implements UserServic
     }
 
     @Override
-    public UserResponse remove(UUID id) throws ServiceException {
-        return sendDelete(endpointUri.resolve(String.valueOf(id)), USER_RESPONSE_TYPE_REFERENCE);
+    public void remove(UUID id) throws ServiceException {
+        sendDelete(endpointUri.resolve(String.valueOf(id)), VOID_TYPE_REFERENCE);
     }
 
     @Override

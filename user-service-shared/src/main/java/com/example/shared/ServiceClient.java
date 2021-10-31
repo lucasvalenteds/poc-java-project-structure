@@ -17,6 +17,10 @@ public abstract class ServiceClient {
     private static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
     private static final String CONTENT_TYPE_HEADER_VALUE = "application/json";
 
+    protected static final TypeReference<Void> VOID_TYPE_REFERENCE =
+        new TypeReference<>() {
+        };
+
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
