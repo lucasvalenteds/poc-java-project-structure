@@ -20,6 +20,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,16 +59,17 @@ class UserRepositoryTest {
             .migrate();
 
         usersInserted = UserTestBuilder.USER_REQUESTS.stream()
-            .map(userRequest -> userRepository.insert(userRequest.name(), userRequest.age()))
+            .map(userRequest -> userRepository.insert(UUID.randomUUID(), userRequest.name(), userRequest.age()))
             .toList();
     }
 
     @Test
     @Order(1)
     void testInserting() {
+        var userId = UserTestBuilder.USER_ID;
         var userRequest = UserTestBuilder.USER_REQUEST;
 
-        userInserted = userRepository.insert(userRequest.name(), userRequest.age());
+        userInserted = userRepository.insert(userId, userRequest.name(), userRequest.age());
 
         assertNotNull(userInserted.id(), "Insert should generate a ID to the user");
         assertEquals(userRequest.name(), userInserted.name());
@@ -92,7 +94,7 @@ class UserRepositoryTest {
 
     @Test
     void testNameExists() {
-        var userInserted = userRepository.insert("Mary Jane", 32);
+        var userInserted = userRepository.insert(UUID.randomUUID(), "Mary Jane", 32);
 
         var exists = userRepository.existsByName(userInserted.name());
 

@@ -1,6 +1,7 @@
 package com.example.user;
 
 import com.example.shared.SQLRepository;
+import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +28,16 @@ public class UserRepository extends SQLRepository {
     }
 
     @Transactional
-    public UserResponse insert(String name, Integer age) {
-        var id = UUID.randomUUID();
-
+    public UserResponse insert(UUID id, String name, Integer age) {
         var query = "insert into " + TABLE + " (" + COLUMNS + ") values (?, ?, ?)";
         var objects = new Object[]{id, name, age};
         var types = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
-        jdbcTemplate.update(query, objects, types);
+
+        var rowsAffected = jdbcTemplate.update(query, objects, types);
+        var expectedRowsAffected = 1;
+        if (rowsAffected != expectedRowsAffected) {
+            throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(query, expectedRowsAffected, rowsAffected);
+        }
 
         return new UserResponse(id, name, age);
     }

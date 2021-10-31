@@ -22,7 +22,8 @@ public final class UserServiceServer implements UserService {
             throw new ServiceValidationException(UserServiceErrors.UserAlreadyExist);
         }
 
-        return userRepository.insert(userRequest.name(), userRequest.age());
+        var userId = UUID.randomUUID();
+        return userRepository.insert(userId, userRequest.name(), userRequest.age());
     }
 
     @Override

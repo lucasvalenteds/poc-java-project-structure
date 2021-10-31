@@ -11,6 +11,7 @@ public final class UserTestBuilder {
     private static final String NAME = "John Smith";
     private static final Integer AGE = 45;
 
+    public static final UUID USER_ID = UserTestBuilder.ID;
     public static final UserRequest USER_REQUEST = new UserRequest(NAME, AGE);
     public static final UserResponse USER_RESPONSE = new UserResponse(ID, NAME, AGE);
     public static final UserResponseFilter USER_RESPONSE_FILTER = new UserResponseFilter();

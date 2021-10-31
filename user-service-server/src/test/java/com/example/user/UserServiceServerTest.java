@@ -23,8 +23,11 @@ class UserServiceServerTest {
 
         Mockito.when(userRepository.existsByName(userRequest.name()))
             .thenReturn(false);
-        Mockito.when(userRepository.insert(userRequest.name(), userRequest.age()))
-            .thenReturn(userResponse);
+        Mockito.when(userRepository.insert(
+            Mockito.any(UUID.class),
+            Mockito.eq(userRequest.name()),
+            Mockito.eq(userRequest.age()))
+        ).thenReturn(userResponse);
 
         var userCreated = userService.create(userRequest);
 
@@ -32,7 +35,7 @@ class UserServiceServerTest {
         Mockito.verify(userRepository, Mockito.times(1))
             .existsByName(userRequest.name());
         Mockito.verify(userRepository, Mockito.times(1))
-            .insert(userRequest.name(), userRequest.age());
+            .insert(Mockito.any(UUID.class), Mockito.eq(userRequest.name()), Mockito.eq(userRequest.age()));
     }
 
     @Test
@@ -51,7 +54,7 @@ class UserServiceServerTest {
         Mockito.verify(userRepository, Mockito.times(1))
             .existsByName(userRequest.name());
         Mockito.verify(userRepository, Mockito.times(0))
-            .insert(userRequest.name(), userRequest.age());
+            .insert(Mockito.any(UUID.class), Mockito.eq(userRequest.name()), Mockito.eq(userRequest.age()));
     }
 
     @Test
