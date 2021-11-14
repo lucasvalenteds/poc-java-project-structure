@@ -66,7 +66,6 @@ class UserRepositoryTest {
     @Test
     @Order(1)
     void testInserting() {
-        var userId = UserTestBuilder.USER_ID;
         var userRequest = UserTestBuilder.USER_REQUEST;
 
         userInserted = userRepository.insert(new UserTableInsert(userRequest.name(), userRequest.age()));
