@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -46,9 +47,7 @@ class ServiceClientTest {
         var serverUri = URI.create(wireMockRuntimeInfo.getHttpBaseUrl());
         ServiceClientTestBuilder.mockDeleteResponse();
 
-        var responseBody = serviceClient.sendDelete(serverUri, ServiceClientTestBuilder.MESSAGE_TYPE_REFERENCE);
-
-        assertEquals(ServiceClientTestBuilder.MESSAGE, responseBody);
+        assertDoesNotThrow(() -> serviceClient.sendDelete(serverUri));
     }
 
     @Test

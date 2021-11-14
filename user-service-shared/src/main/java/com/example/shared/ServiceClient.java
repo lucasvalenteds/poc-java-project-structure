@@ -18,10 +18,6 @@ public abstract class ServiceClient {
     private static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
     private static final String CONTENT_TYPE_HEADER_VALUE = "application/json";
 
-    protected static final TypeReference<Void> VOID_TYPE_REFERENCE =
-        new TypeReference<>() {
-        };
-
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
@@ -50,14 +46,14 @@ public abstract class ServiceClient {
         return sendRequestOrThrow(request, returnType);
     }
 
-    protected <R> R sendDelete(URI uri, TypeReference<R> returnType) {
+    protected void sendDelete(URI uri) {
         var request = HttpRequest.newBuilder()
             .uri(uri)
             .DELETE()
             .header(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_HEADER_VALUE)
             .build();
 
-        return sendRequestOrThrow(request, returnType);
+        sendRequestOrThrow(request);
     }
 
     protected String createQueryUri(Map<String, Object> queryParameters) {
@@ -75,6 +71,15 @@ public abstract class ServiceClient {
         parameters.put("sortDirection", filter.getSortDirection());
 
         return this.createQueryUri(parameters);
+    }
+
+    private void sendRequestOrThrow(HttpRequest request) {
+        try {
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new ServiceClientException(exception);
+        }
     }
 
     private <T> T sendRequestOrThrow(HttpRequest request, TypeReference<T> returnType) {

@@ -35,12 +35,12 @@ public final class UserServiceClient extends ServiceClient implements UserServic
 
     @Override
     public void remove(UUID id) throws ServiceException {
-        sendDelete(endpointUri.resolve(String.valueOf(id)), VOID_TYPE_REFERENCE);
+        sendDelete(URI.create(endpointUri + "/" + id));
     }
 
     @Override
     public UserResponse findById(UUID id) throws ServiceException {
-        return sendGet(endpointUri.resolve(String.valueOf(id)), USER_RESPONSE_TYPE_REFERENCE);
+        return sendGet(URI.create(endpointUri + "/" + id), USER_RESPONSE_TYPE_REFERENCE);
     }
 
     @Override
@@ -49,6 +49,9 @@ public final class UserServiceClient extends ServiceClient implements UserServic
         queryParameters.put("name", filter.getName());
         queryParameters.put("age", filter.getName());
 
-        return sendGet(endpointUri.resolve(createQueryUri(queryParameters, filter)), SERVICE_RESPONSE_TYPE_REFERENCE);
+        return sendGet(
+            URI.create(endpointUri + createQueryUri(queryParameters, filter)),
+            SERVICE_RESPONSE_TYPE_REFERENCE
+        );
     }
 }
