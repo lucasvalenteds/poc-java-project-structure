@@ -49,6 +49,6 @@ public final class UserServiceClient extends ServiceClient implements UserServic
         queryParameters.put("name", filter.getName());
         queryParameters.put("age", filter.getName());
 
-        return sendGet(endpointUri.resolve(createQueryUri(queryParameters)), SERVICE_RESPONSE_TYPE_REFERENCE);
+        return sendGet(endpointUri.resolve(createQueryUri(queryParameters, filter)), SERVICE_RESPONSE_TYPE_REFERENCE);
     }
 }

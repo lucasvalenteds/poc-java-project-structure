@@ -14,7 +14,6 @@ public final class UserTestBuilder {
     public static final UserTable USER_TABLE = new UserTable(ID, NAME, AGE);
     public static final UserTableInsert USER_TABLE_INSERT = new UserTableInsert(NAME, AGE);
 
-    public static final UUID USER_ID = UserTestBuilder.ID;
     public static final UserRequest USER_REQUEST = new UserRequest(NAME, AGE);
     public static final UserResponse USER_RESPONSE = new UserResponse(ID, NAME, AGE);
     public static final UserResponseFilter USER_RESPONSE_FILTER = new UserResponseFilter();

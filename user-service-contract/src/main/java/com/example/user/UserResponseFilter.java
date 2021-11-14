@@ -1,13 +1,18 @@
 package com.example.user;
 
+import com.example.shared.ServiceResponseFilter;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import lombok.ToString;
 
-@EqualsAndHashCode
-@ToString
-public final class UserResponseFilter {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public final class UserResponseFilter extends ServiceResponseFilter<UserResponseFilter> {
 
+    @Setter
     private String name;
+
+    @Setter
     private Integer age;
 
     public String getName() {

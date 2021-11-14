@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -45,13 +44,8 @@ public final class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ServiceResponse<UserResponse>> findAll(@RequestParam(required = false) String name,
-                                                                 @RequestParam(required = false) Integer age) {
-        var userFilter = new UserResponseFilter()
-            .name(name)
-            .age(age);
-
+    public ResponseEntity<ServiceResponse<UserResponse>> findAll(UserResponseFilter filter) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(userService.findAll(userFilter));
+            .body(userService.findAll(filter));
     }
 }

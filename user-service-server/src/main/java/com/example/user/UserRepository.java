@@ -68,14 +68,19 @@ public class UserRepository extends SQLRepository {
         var filters = new StringBuilder();
         var objects = new ArrayList<>();
         var types = new ArrayList<Integer>();
-        writeQueryFilters(filters, objects, types, filter);
+        this.writeQueryFilters(filters, objects, types, filter);
 
+        var sortingAndPaging = new StringBuilder();
+        super.writePagingClause(sortingAndPaging, filter);
+        super.writeSortingClause(sortingAndPaging, filter);
+
+        var sql = query + filters + sortingAndPaging;
         var primitiveObjects = objects.toArray();
         var primitiveTypes = types.stream()
             .mapToInt(it -> it)
             .toArray();
 
-        return jdbcTemplate.query(query + filters, primitiveObjects, primitiveTypes, UserRepository::mapRow);
+        return jdbcTemplate.query(sql, primitiveObjects, primitiveTypes, UserRepository::mapRow);
     }
 
     public Long count(UserResponseFilter filter) {
@@ -84,14 +89,18 @@ public class UserRepository extends SQLRepository {
         var filters = new StringBuilder();
         var objects = new ArrayList<>();
         var types = new ArrayList<Integer>();
-        writeQueryFilters(filters, objects, types, filter);
+        this.writeQueryFilters(filters, objects, types, filter);
 
+        var paging = new StringBuilder();
+        super.writePagingClause(paging, filter);
+
+        var sql = query + filters + paging;
         var primitiveObjects = objects.toArray();
         var primitiveTypes = types.stream()
             .mapToInt(it -> it)
             .toArray();
 
-        return jdbcTemplate.queryForObject(query + filters, primitiveObjects, primitiveTypes, Long.class);
+        return jdbcTemplate.queryForObject(sql, primitiveObjects, primitiveTypes, Long.class);
     }
 
     public Boolean existsByName(String name) {
