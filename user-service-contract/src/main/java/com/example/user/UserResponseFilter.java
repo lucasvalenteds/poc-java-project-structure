@@ -1,7 +1,10 @@
 package com.example.user;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 public final class UserResponseFilter {
 
     private String name;
@@ -23,18 +26,5 @@ public final class UserResponseFilter {
     public UserResponseFilter age(Integer age) {
         this.age = age;
         return this;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserResponseFilter that = (UserResponseFilter) o;
-        return Objects.equals(name, that.name) && Objects.equals(age, that.age);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, age);
     }
 }
