@@ -15,12 +15,6 @@ import java.util.UUID;
 
 public class UserRepository extends SQLRepository {
 
-    private static final String TABLE = "USERS";
-    private static final String ID = "ID";
-    private static final String FIRST_NAME = "FIRST_NAME";
-    private static final String AGE = "AGE";
-    private static final String COLUMNS = String.join(", ", List.of(ID, FIRST_NAME, AGE));
-
     private final JdbcTemplate jdbcTemplate;
 
     public UserRepository(DataSource dataSource) {
@@ -28,9 +22,9 @@ public class UserRepository extends SQLRepository {
     }
 
     @Transactional
-    public UserResponse insert(UUID id, String name, Integer age) {
-        var query = "insert into " + TABLE + " (" + COLUMNS + ") values (?, ?, ?)";
-        var objects = new Object[]{id, name, age};
+    public UserResponse insert(UserTable table) {
+        var query = "insert into " + UserTable.TABLE + " (" + UserTable.COLUMNS + ") values (?, ?, ?)";
+        var objects = new Object[]{table.id(), table.firstName(), table.age()};
         var types = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 
         var rowsAffected = jdbcTemplate.update(query, objects, types);
@@ -39,14 +33,14 @@ public class UserRepository extends SQLRepository {
             throw new IncorrectResultSizeDataAccessException(expectedRowsAffected, rowsAffected);
         }
 
-        return new UserResponse(id, name, age);
+        return new UserResponse(table.id(), table.firstName(), table.age());
     }
 
     @Transactional
     public void remove(UUID id) {
         var userResponse = findById(id);
 
-        var query = "delete from " + TABLE + " where " + ID + " = ?";
+        var query = "delete from " + UserTable.TABLE + " where " + UserTable.ID + " = ?";
         var objects = new Object[]{userResponse.id()};
         var types = new int[]{Types.VARCHAR};
 
@@ -58,7 +52,7 @@ public class UserRepository extends SQLRepository {
     }
 
     public UserResponse findById(UUID id) {
-        var query = "select " + COLUMNS + " from " + TABLE + " where " + ID + " = ?";
+        var query = "select " + UserTable.COLUMNS + " from " + UserTable.TABLE + " where " + UserTable.ID + " = ?";
 
         var objects = new Object[]{id};
         var types = new int[]{Types.VARCHAR};
@@ -67,7 +61,7 @@ public class UserRepository extends SQLRepository {
     }
 
     public List<UserResponse> findAll(UserResponseFilter filter) {
-        var query = "select " + COLUMNS + " from " + TABLE;
+        var query = "select " + UserTable.COLUMNS + " from " + UserTable.TABLE;
 
         var filters = new StringBuilder();
         var objects = new ArrayList<>();
@@ -83,7 +77,7 @@ public class UserRepository extends SQLRepository {
     }
 
     public Long count(UserResponseFilter filter) {
-        var query = "select count(1) from " + TABLE;
+        var query = "select count(1) from " + UserTable.TABLE;
 
         var filters = new StringBuilder();
         var objects = new ArrayList<>();
@@ -99,7 +93,7 @@ public class UserRepository extends SQLRepository {
     }
 
     public Boolean existsByName(String name) {
-        var query = "select exists ( select 1 from " + TABLE + " where " + FIRST_NAME + " = ?)";
+        var query = "select exists ( select 1 from " + UserTable.TABLE + " where " + UserTable.FIRST_NAME + " = ?)";
 
         var objects = new Object[]{name};
         var types = new int[]{Types.VARCHAR};
@@ -114,13 +108,13 @@ public class UserRepository extends SQLRepository {
         var filters = new ArrayList<String>();
 
         if (filter.getName() != null) {
-            filters.add(FIRST_NAME + " like ?");
+            filters.add(UserTable.FIRST_NAME + " like ?");
             objects.add(toLikeFull(filter.getName()));
             types.add(Types.VARCHAR);
         }
 
         if (filter.getAge() != null) {
-            filters.add(AGE + " = ?");
+            filters.add(UserTable.AGE + " = ?");
             objects.add(filter.getAge());
             types.add(Types.INTEGER);
         }
@@ -130,9 +124,9 @@ public class UserRepository extends SQLRepository {
 
     private static UserResponse mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
         return new UserResponse(
-            UUID.fromString(resultSet.getString(ID)),
-            resultSet.getString(FIRST_NAME),
-            resultSet.getInt(AGE)
+            UUID.fromString(resultSet.getString(UserTable.ID)),
+            resultSet.getString(UserTable.FIRST_NAME),
+            resultSet.getInt(UserTable.AGE)
         );
     }
 }

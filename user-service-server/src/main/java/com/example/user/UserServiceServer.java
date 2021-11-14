@@ -23,7 +23,7 @@ public final class UserServiceServer implements UserService {
         }
 
         var userId = UUID.randomUUID();
-        return userRepository.insert(userId, userRequest.name(), userRequest.age());
+        return userRepository.insert(new UserTable(userId, userRequest.name(), userRequest.age()));
     }
 
     @Override

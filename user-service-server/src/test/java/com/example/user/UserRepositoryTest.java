@@ -60,7 +60,8 @@ class UserRepositoryTest {
             .migrate();
 
         usersInserted = UserTestBuilder.USER_REQUESTS.stream()
-            .map(userRequest -> userRepository.insert(UUID.randomUUID(), userRequest.name(), userRequest.age()))
+            .map(userRequest ->
+                userRepository.insert(new UserTable(UUID.randomUUID(), userRequest.name(), userRequest.age())))
             .toList();
     }
 
@@ -70,7 +71,7 @@ class UserRepositoryTest {
         var userId = UserTestBuilder.USER_ID;
         var userRequest = UserTestBuilder.USER_REQUEST;
 
-        userInserted = userRepository.insert(userId, userRequest.name(), userRequest.age());
+        userInserted = userRepository.insert(new UserTable(userId, userRequest.name(), userRequest.age()));
 
         assertNotNull(userInserted.id(), "Insert should generate a ID to the user");
         assertEquals(userRequest.name(), userInserted.name());
@@ -93,7 +94,7 @@ class UserRepositoryTest {
 
     @Test
     void testNameExists() {
-        var userInserted = userRepository.insert(UUID.randomUUID(), "Mary Jane", 32);
+        var userInserted = userRepository.insert(new UserTable(UUID.randomUUID(), "Mary Jane", 32));
 
         var exists = userRepository.existsByName(userInserted.name());
 
