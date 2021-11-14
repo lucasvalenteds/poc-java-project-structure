@@ -20,7 +20,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -49,8 +48,8 @@ class UserRepositoryTest {
 
     private static UserRepository userRepository;
 
-    private static List<UserResponse> usersInserted;
-    private static UserResponse userInserted;
+    private static List<UserTable> usersInserted;
+    private static UserTable userInserted;
 
     @BeforeAll
     static void beforeAll(ApplicationContext context) {
@@ -60,8 +59,7 @@ class UserRepositoryTest {
             .migrate();
 
         usersInserted = UserTestBuilder.USER_REQUESTS.stream()
-            .map(userRequest ->
-                userRepository.insert(new UserTable(UUID.randomUUID(), userRequest.name(), userRequest.age())))
+            .map(userRequest -> userRepository.insert(new UserTableInsert(userRequest.name(), userRequest.age())))
             .toList();
     }
 
@@ -71,10 +69,10 @@ class UserRepositoryTest {
         var userId = UserTestBuilder.USER_ID;
         var userRequest = UserTestBuilder.USER_REQUEST;
 
-        userInserted = userRepository.insert(new UserTable(userId, userRequest.name(), userRequest.age()));
+        userInserted = userRepository.insert(new UserTableInsert(userRequest.name(), userRequest.age()));
 
         assertNotNull(userInserted.id(), "Insert should generate a ID to the user");
-        assertEquals(userRequest.name(), userInserted.name());
+        assertEquals(userRequest.name(), userInserted.firstName());
         assertEquals(userRequest.age(), userInserted.age());
     }
 
@@ -94,9 +92,9 @@ class UserRepositoryTest {
 
     @Test
     void testNameExists() {
-        var userInserted = userRepository.insert(new UserTable(UUID.randomUUID(), "Mary Jane", 32));
+        var userInserted = userRepository.insert(new UserTableInsert("Mary Jane", 32));
 
-        var exists = userRepository.existsByName(userInserted.name());
+        var exists = userRepository.existsByName(userInserted.firstName());
 
         assertTrue(exists);
 
@@ -121,7 +119,7 @@ class UserRepositoryTest {
 
     @Test
     void testFindingAllUsers() {
-        List<UserResponse> usersFound = userRepository.findAll(new UserResponseFilter());
+        List<UserTable> usersFound = userRepository.findAll(new UserResponseFilter());
 
         assertEquals(usersInserted, usersFound);
     }
@@ -135,7 +133,7 @@ class UserRepositoryTest {
 
         assertThat(usersFound)
             .hasSize(2)
-            .extracting(UserResponse::name)
+            .extracting(UserTable::firstName)
             .allMatch(name -> name.endsWith(filter.getName()));
     }
 
@@ -148,7 +146,7 @@ class UserRepositoryTest {
 
         assertThat(usersFound)
             .hasSize(2)
-            .extracting(UserResponse::age)
+            .extracting(UserTable::age)
             .containsOnly(filter.getAge());
     }
 }

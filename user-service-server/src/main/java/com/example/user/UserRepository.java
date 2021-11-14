@@ -22,9 +22,11 @@ public class UserRepository extends SQLRepository {
     }
 
     @Transactional
-    public UserResponse insert(UserTable table) {
+    public UserTable insert(UserTableInsert userTableInsert) {
+        var userTable = new UserTable(UUID.randomUUID(), userTableInsert.firstName(), userTableInsert.age());
+
         var query = "insert into " + UserTable.TABLE + " (" + UserTable.COLUMNS + ") values (?, ?, ?)";
-        var objects = new Object[]{table.id(), table.firstName(), table.age()};
+        var objects = new Object[]{userTable.id(), userTable.firstName(), userTable.age()};
         var types = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 
         var rowsAffected = jdbcTemplate.update(query, objects, types);
@@ -33,7 +35,7 @@ public class UserRepository extends SQLRepository {
             throw new IncorrectResultSizeDataAccessException(expectedRowsAffected, rowsAffected);
         }
 
-        return new UserResponse(table.id(), table.firstName(), table.age());
+        return userTable;
     }
 
     @Transactional
@@ -51,7 +53,7 @@ public class UserRepository extends SQLRepository {
         }
     }
 
-    public UserResponse findById(UUID id) {
+    public UserTable findById(UUID id) {
         var query = "select " + UserTable.COLUMNS + " from " + UserTable.TABLE + " where " + UserTable.ID + " = ?";
 
         var objects = new Object[]{id};
@@ -60,7 +62,7 @@ public class UserRepository extends SQLRepository {
         return jdbcTemplate.queryForObject(query, objects, types, UserRepository::mapRow);
     }
 
-    public List<UserResponse> findAll(UserResponseFilter filter) {
+    public List<UserTable> findAll(UserResponseFilter filter) {
         var query = "select " + UserTable.COLUMNS + " from " + UserTable.TABLE;
 
         var filters = new StringBuilder();
@@ -122,8 +124,8 @@ public class UserRepository extends SQLRepository {
         super.writeWhereClause(query, filters);
     }
 
-    private static UserResponse mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
-        return new UserResponse(
+    private static UserTable mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
+        return new UserTable(
             UUID.fromString(resultSet.getString(UserTable.ID)),
             resultSet.getString(UserTable.FIRST_NAME),
             resultSet.getInt(UserTable.AGE)

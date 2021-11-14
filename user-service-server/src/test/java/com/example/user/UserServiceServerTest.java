@@ -6,15 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import java.util.UUID;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserServiceServerTest {
 
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
-    private final UserService userService = new UserServiceServer(userRepository);
+    private final UserMapper userMapper = new UserMapper();
+    private final UserService userService = new UserServiceServer(userRepository, userMapper);
 
     @Test
     void testCreating() {
@@ -23,8 +25,8 @@ class UserServiceServerTest {
 
         Mockito.when(userRepository.existsByName(userRequest.name()))
             .thenReturn(false);
-        Mockito.when(userRepository.insert(Mockito.any(UserTable.class)))
-            .thenReturn(userResponse);
+        Mockito.when(userRepository.insert(UserTestBuilder.USER_TABLE_INSERT))
+            .thenReturn(UserTestBuilder.USER_TABLE);
 
         var userCreated = userService.create(userRequest);
 
@@ -32,7 +34,7 @@ class UserServiceServerTest {
         Mockito.verify(userRepository, Mockito.times(1))
             .existsByName(userRequest.name());
         Mockito.verify(userRepository, Mockito.times(1))
-            .insert(Mockito.any(UserTable.class));
+            .insert(UserTestBuilder.USER_TABLE_INSERT);
     }
 
     @Test
@@ -51,7 +53,7 @@ class UserServiceServerTest {
         Mockito.verify(userRepository, Mockito.times(1))
             .existsByName(userRequest.name());
         Mockito.verify(userRepository, Mockito.times(0))
-            .insert(Mockito.any(UserTable.class));
+            .insert(UserTestBuilder.USER_TABLE_INSERT);
     }
 
     @Test
@@ -89,16 +91,16 @@ class UserServiceServerTest {
     @Test
     void testFindingById() {
         var userResponse = UserTestBuilder.USER_RESPONSE;
-        var userId = userResponse.id();
+        var userTable = UserTestBuilder.USER_TABLE;
 
-        Mockito.when(userRepository.findById(userId))
-            .thenReturn(userResponse);
+        Mockito.when(userRepository.findById(userTable.id()))
+            .thenReturn(userTable);
 
-        var userFound = userService.findById(userId);
+        var userFound = userService.findById(userTable.id());
 
         assertEquals(userResponse, userFound);
         Mockito.verify(userRepository, Mockito.times(1))
-            .findById(userId);
+            .findById(userTable.id());
     }
 
     @Test
@@ -123,20 +125,18 @@ class UserServiceServerTest {
     @Test
     void testFindingAll() {
         var filter = UserTestBuilder.USER_RESPONSE_FILTER;
-        var userResponses = UserTestBuilder.USER_REQUESTS.stream()
-            .map(userRequest -> new UserResponse(UUID.randomUUID(), userRequest.name(), userRequest.age()))
-            .toList();
-        var amountOfUserResponses = Long.valueOf(userResponses.size());
+        var users = List.of(UserTestBuilder.USER_REQUESTS);
+        var amountOfUsers = Long.valueOf(users.size());
 
         Mockito.when(userRepository.findAll(filter))
-            .thenReturn(userResponses);
+            .thenReturn(List.of(UserTestBuilder.USER_TABLE));
         Mockito.when(userRepository.count(filter))
-            .thenReturn(amountOfUserResponses);
+            .thenReturn(amountOfUsers);
 
         var serviceResponse = userService.findAll(filter);
 
-        assertEquals(userResponses, serviceResponse.items());
-        assertEquals(amountOfUserResponses, serviceResponse.total());
+        assertNotNull(serviceResponse.items());
+        assertEquals(amountOfUsers, serviceResponse.total());
         Mockito.verify(userRepository, Mockito.times(1))
             .findAll(filter);
         Mockito.verify(userRepository, Mockito.times(1))

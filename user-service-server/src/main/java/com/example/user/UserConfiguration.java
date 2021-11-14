@@ -14,7 +14,12 @@ public class UserConfiguration {
     }
 
     @Bean
-    UserService userService(UserRepository userRepository) {
-        return new UserServiceServer(userRepository);
+    UserMapper userMapper() {
+        return new UserMapper();
+    }
+
+    @Bean
+    UserService userService(UserRepository userRepository, UserMapper userMapper) {
+        return new UserServiceServer(userRepository, userMapper);
     }
 }
