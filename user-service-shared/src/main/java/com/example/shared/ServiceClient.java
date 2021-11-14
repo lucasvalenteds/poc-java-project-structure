@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,16 @@ public abstract class ServiceClient {
             .filter(queryParameter -> queryParameter.getValue() != null)
             .map(queryParameter -> queryParameter.getKey() + "=" + queryParameter.getValue())
             .collect(Collectors.joining("&", "/?", ""));
+    }
+
+    protected String createQueryUri(Map<String, Object> queryParameters, ServiceResponseFilter<?> filter) {
+        var parameters = new HashMap<>(queryParameters);
+        parameters.put("page", filter.getPage());
+        parameters.put("size", filter.getSize());
+        parameters.put("sort", filter.getSort());
+        parameters.put("sortDirection", filter.getSortDirection());
+
+        return this.createQueryUri(parameters);
     }
 
     private <T> T sendRequestOrThrow(HttpRequest request, TypeReference<T> returnType) {

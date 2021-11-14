@@ -48,4 +48,72 @@ class SQLRepositoryTest {
 
         assertEquals(" where NAME like ? and AGE = ? and ACTIVE = true", query.toString());
     }
+
+    @Test
+    void testWritingPagingClauseWithLimit() {
+        var query = new StringBuilder();
+        var filter = new ServiceResponseFilter<>()
+            .size(10L);
+
+        repository.writePagingClause(query, filter);
+
+        assertEquals(" limit 10", query.toString());
+    }
+
+    @Test
+    void testWritingPagingClauseWithLimitAndOffset() {
+        var query = new StringBuilder();
+        var filter = new ServiceResponseFilter<>()
+            .size(10L)
+            .page(2L);
+
+        repository.writePagingClause(query, filter);
+
+        assertEquals(" limit 10 offset 2", query.toString());
+    }
+
+    @Test
+    void testWritingPagingClauseIgnoresOffsetWhenLimitNotInformed() {
+        var query = new StringBuilder();
+        var filter = new ServiceResponseFilter<>()
+            .page(2L);
+
+        repository.writePagingClause(query, filter);
+
+        assertEquals("", query.toString());
+    }
+
+    @Test
+    void testWritingSortingClauseWithSort() {
+        var query = new StringBuilder();
+        var filter = new ServiceResponseFilter<>()
+            .sort("name");
+
+        repository.writeSortingClause(query, filter);
+
+        assertEquals(" order by name", query.toString());
+    }
+
+    @Test
+    void testWritingSortingClauseWithSortAndDirection() {
+        var query = new StringBuilder();
+        var filter = new ServiceResponseFilter<>()
+            .sort("age")
+            .sortDirection("desc");
+
+        repository.writeSortingClause(query, filter);
+
+        assertEquals(" order by age desc", query.toString());
+    }
+
+    @Test
+    void testWritingSortingClauseIgnoresDirectionWhenSortNotInformed() {
+        var query = new StringBuilder();
+        var filter = new ServiceResponseFilter<>()
+            .sortDirection("asc");
+
+        repository.writeSortingClause(query, filter);
+
+        assertEquals("", query.toString());
+    }
 }
