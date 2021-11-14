@@ -12,8 +12,8 @@ public abstract class SQLRepository {
     }
 
     protected void writePagingClause(StringBuilder query, ServiceResponseFilter<?> filter) {
-        Long limit = filter.getSize();
-        Long offset = filter.getPage();
+        var limit = filter.getSize();
+        var offset = filter.getPage();
 
         if (limit != null) {
             query.append(" limit ").append(limit);
@@ -25,8 +25,8 @@ public abstract class SQLRepository {
     }
 
     protected void writeSortingClause(StringBuilder query, ServiceResponseFilter<?> filter) {
-        String sort = filter.getSort();
-        String direction = filter.getSortDirection();
+        var sort = filter.getSort();
+        var direction = filter.getSortDirection();
 
         if (sort != null) {
             query.append(" order by ").append(sort);
