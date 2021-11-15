@@ -2,8 +2,8 @@ package com.example.user;
 
 import com.example.shared.ClientTestConfiguration;
 import com.example.shared.DatabaseConfiguration;
-import com.example.shared.ServiceClientException;
 import com.example.shared.ServiceConfiguration;
+import com.example.shared.ServiceResourceException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.AfterAll;
@@ -90,6 +90,6 @@ class UserServiceClientTest {
     void testDeleting() {
         userService.remove(userId);
 
-        assertThrows(ServiceClientException.class, () -> userService.findById(userId));
+        assertThrows(ServiceResourceException.class, () -> userService.findById(userId));
     }
 }

@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -83,7 +84,7 @@ class UserServiceServerTest {
         );
 
         assertEquals("Resource not found by ID", exception.getMessage());
-        assertEquals(userId, exception.getResourceId());
+        assertEquals(Optional.of(userId), exception.getResourceId());
         Mockito.verify(userRepository, Mockito.times(1))
             .remove(userId);
     }
@@ -117,7 +118,7 @@ class UserServiceServerTest {
         );
 
         assertEquals("Resource not found by ID", exception.getMessage());
-        assertEquals(userId, exception.getResourceId());
+        assertEquals(Optional.of(userId), exception.getResourceId());
         Mockito.verify(userRepository, Mockito.times(1))
             .findById(userId);
     }

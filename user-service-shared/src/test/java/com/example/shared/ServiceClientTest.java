@@ -9,9 +9,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.util.HashMap;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @WireMockTest
@@ -51,44 +53,61 @@ class ServiceClientTest {
     }
 
     @Test
-    void testHandlingJsonSerializationError(WireMockRuntimeInfo wireMockRuntimeInfo) throws IOException {
+    void testHandlingBadRequest(WireMockRuntimeInfo wireMockRuntimeInfo) {
         var serverUri = URI.create(wireMockRuntimeInfo.getHttpBaseUrl());
-        var requestBody = ServiceClientTestBuilder.createRequestBodyFromJsonFile("item-malformed.json");
-        ServiceClientTestBuilder.mockMalformedPostRequest();
+        ServiceClientTestBuilder.mockServiceErrorResponse(400);
 
         var exception = assertThrows(
-            ServiceClientException.class,
-            () -> serviceClient.sendPost(serverUri, requestBody, ServiceClientTestBuilder.MESSAGE_TYPE_REFERENCE)
+            ServiceValidationException.class,
+            () -> serviceClient.sendGet(serverUri, ServiceClientTestBuilder.MESSAGE_TYPE_REFERENCE)
         );
 
-        assertEquals("Client could not communicate with the server", exception.getMessage());
+        assertEquals(1001, exception.getError().code());
+        assertEquals("Some error happened", exception.getError().message());
     }
 
     @Test
-    void testHandlingJsonDeserializationError(WireMockRuntimeInfo wireMockRuntimeInfo) throws IOException {
+    void testHandlingNotFound(WireMockRuntimeInfo wireMockRuntimeInfo) {
         var serverUri = URI.create(wireMockRuntimeInfo.getHttpBaseUrl());
-        var requestBody = ServiceClientTestBuilder.createRequestBodyFromJsonFile("item-invalid.json");
-        ServiceClientTestBuilder.mockMalformedPostResponse();
+        ServiceClientTestBuilder.mockServiceErrorResponse(404);
 
         var exception = assertThrows(
-            ServiceClientException.class,
-            () -> serviceClient.sendPost(serverUri, requestBody, ServiceClientTestBuilder.MESSAGE_TYPE_REFERENCE)
+            ServiceResourceException.class,
+            () -> serviceClient.sendGet(serverUri, ServiceClientTestBuilder.MESSAGE_TYPE_REFERENCE)
         );
 
-        assertEquals("Client could not communicate with the server", exception.getMessage());
+        assertEquals(Optional.empty(), exception.getResourceId());
+        assertEquals("Resource not found by ID", exception.getMessage());
+        assertNull(exception.getCause());
     }
 
     @Test
-    void testHandlingServerError(WireMockRuntimeInfo wireMockRuntimeInfo) {
+    void testHandlingInternalError(WireMockRuntimeInfo wireMockRuntimeInfo) {
         var serverUri = URI.create(wireMockRuntimeInfo.getHttpBaseUrl());
-        ServiceClientTestBuilder.mockServerErrorResponse();
+        ServiceClientTestBuilder.mockServiceErrorResponse(500);
+
+        var exception = assertThrows(
+            ServiceException.class,
+            () -> serviceClient.sendGet(serverUri, ServiceClientTestBuilder.MESSAGE_TYPE_REFERENCE)
+        );
+
+        assertEquals("Some error happened", exception.getMessage());
+        assertNull(exception.getCause());
+    }
+
+    @Test
+    void testHandlingUnknownErrors(WireMockRuntimeInfo wireMockRuntimeInfo) {
+        var serverUri = URI.create(wireMockRuntimeInfo.getHttpBaseUrl());
+        ServiceClientTestBuilder.mockServiceErrorResponse(418);
 
         var exception = assertThrows(
             ServiceClientException.class,
             () -> serviceClient.sendGet(serverUri, ServiceClientTestBuilder.MESSAGE_TYPE_REFERENCE)
         );
 
-        assertEquals("Client could not communicate with the server", exception.getMessage());
+        assertEquals(Optional.of(418), exception.getStatusCode());
+        assertEquals(Optional.of(wireMockRuntimeInfo.getHttpBaseUrl()), exception.getUrl());
+        assertEquals("Client could not handle the server response", exception.getMessage());
     }
 
     @Test
@@ -101,5 +120,19 @@ class ServiceClientTest {
         var uri = serviceClient.createQueryUri(queryParameters);
 
         assertEquals("/?isAdmin=false&age=21", uri);
+    }
+
+    @Test
+    void testCreatingQueryUriWithPaginationAndSorting() {
+        var queryParameters = new HashMap<String, Object>();
+        var filter = new ServiceResponseFilter<>()
+            .page(2L)
+            .size(10L)
+            .sort("name")
+            .sortDirection("asc");
+
+        var uri = serviceClient.createQueryUri(queryParameters, filter);
+
+        assertEquals("/?sortDirection=asc&size=10&page=2&sort=name", uri);
     }
 }

@@ -13,11 +13,13 @@ public final class ServiceExceptionHandlers {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceExceptionHandlers.class);
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> handleException(Exception exception) {
+    public ResponseEntity<ServiceErrorResponse> handleException(Exception exception) {
         LOGGER.error("Internal Server error", exception);
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .build();
+        var statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        return ResponseEntity.status(statusCode)
+            .body(new ServiceErrorResponse(statusCode.value(), statusCode.getReasonPhrase()));
     }
 
     @ExceptionHandler(ServiceResourceException.class)

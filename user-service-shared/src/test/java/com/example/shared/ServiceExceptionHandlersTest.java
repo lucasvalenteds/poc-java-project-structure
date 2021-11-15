@@ -1,6 +1,7 @@
 package com.example.shared;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
 
@@ -19,7 +20,9 @@ class ServiceExceptionHandlersTest {
             .uri("/service")
             .exchange()
             .expectStatus().is5xxServerError()
-            .expectBody().isEmpty();
+            .expectBody()
+            .jsonPath("$.code").isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .jsonPath("$.message").isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
     }
 
     @Test

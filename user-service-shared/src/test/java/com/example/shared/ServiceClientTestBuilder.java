@@ -33,7 +33,7 @@ public final class ServiceClientTestBuilder {
 
     public static void mockPostResponse() {
         var responseDefinition = ResponseDefinitionBuilder.responseDefinition()
-            .withStatus(200)
+            .withStatus(201)
             .withHeader("Content-Type", "application/json")
             .withBodyFile("item-valid.json");
 
@@ -45,7 +45,7 @@ public final class ServiceClientTestBuilder {
 
     public static void mockDeleteResponse() {
         var responseDefinition = ResponseDefinitionBuilder.responseDefinition()
-            .withStatus(200)
+            .withStatus(202)
             .withHeader("Content-Type", "application/json")
             .withBodyFile("item-valid.json");
 
@@ -55,39 +55,18 @@ public final class ServiceClientTestBuilder {
         WireMock.stubFor(mapping);
     }
 
-    public static void mockMalformedPostRequest() {
+    public static void mockServiceErrorResponse(int statusCode) {
         var responseDefinition = ResponseDefinitionBuilder.responseDefinition()
-            .withStatus(200)
+            .withStatus(statusCode)
             .withHeader("Content-Type", "application/json")
-            .withBodyFile("item-malformed.json");
-
-        var mapping = WireMock.post(UrlPattern.ANY)
-            .willReturn(responseDefinition);
-
-        WireMock.stubFor(mapping);
-    }
-
-    public static void mockMalformedPostResponse() {
-        var responseDefinition = ResponseDefinitionBuilder.responseDefinition()
-            .withStatus(200)
-            .withHeader("Content-Type", "application/json");
-
-        var mapping = WireMock.post(UrlPattern.ANY)
-            .willReturn(responseDefinition);
-
-        WireMock.stubFor(mapping);
-    }
-
-    public static void mockServerErrorResponse() {
-        var responseDefinition = ResponseDefinitionBuilder.responseDefinition()
-            .withStatus(500)
-            .withHeader("Content-Type", "application/json");
+            .withBodyFile("service-error.json");
 
         var mapping = WireMock.get(UrlPattern.ANY)
             .willReturn(responseDefinition);
 
         WireMock.stubFor(mapping);
     }
+
 
     public static String createRequestBodyFromJsonFile(String filename) throws IOException {
         var path = Path.of("src", "test", "resources")

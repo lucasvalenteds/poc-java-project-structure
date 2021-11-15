@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 
 public abstract class ServiceClient {
 
+    private static final TypeReference<ServiceErrorResponse> SERVICE_ERROR_RESPONSE_TYPE_REFERENCE =
+        new TypeReference<>() {
+        };
+
     private static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
     private static final String CONTENT_TYPE_HEADER_VALUE = "application/json";
 
@@ -33,7 +37,10 @@ public abstract class ServiceClient {
             .header(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_HEADER_VALUE)
             .build();
 
-        return sendRequestOrThrow(request, returnType);
+        var response = sendRequestOrThrow(request);
+        validateResponse(response);
+
+        return deserializeResponseBodyOrThrow(response, returnType);
     }
 
     protected <B, R> R sendPost(URI uri, B requestBody, TypeReference<R> returnType) {
@@ -43,7 +50,10 @@ public abstract class ServiceClient {
             .header(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_HEADER_VALUE)
             .build();
 
-        return sendRequestOrThrow(request, returnType);
+        var response = sendRequestOrThrow(request);
+        validateResponse(response);
+
+        return deserializeResponseBodyOrThrow(response, returnType);
     }
 
     protected void sendDelete(URI uri) {
@@ -53,7 +63,8 @@ public abstract class ServiceClient {
             .header(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_HEADER_VALUE)
             .build();
 
-        sendRequestOrThrow(request);
+        var response = sendRequestOrThrow(request);
+        validateResponse(response);
     }
 
     protected String createQueryUri(Map<String, Object> queryParameters) {
@@ -73,22 +84,31 @@ public abstract class ServiceClient {
         return this.createQueryUri(parameters);
     }
 
-    private void sendRequestOrThrow(HttpRequest request) {
+    private HttpResponse<byte[]> sendRequestOrThrow(HttpRequest request) {
         try {
-            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
         } catch (IOException | InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new ServiceClientException(exception);
         }
     }
 
-    private <T> T sendRequestOrThrow(HttpRequest request, TypeReference<T> returnType) {
-        try {
-            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
-            return objectMapper.readValue(response.body(), returnType);
-        } catch (IOException | InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            throw new ServiceClientException(exception);
+    private void validateResponse(HttpResponse<byte[]> response) {
+        switch (response.statusCode()) {
+            case 200:
+            case 201:
+            case 202:
+                return;
+            case 400:
+                var validation = deserializeResponseBodyOrThrow(response, SERVICE_ERROR_RESPONSE_TYPE_REFERENCE);
+                throw new ServiceValidationException(new ServiceError(validation.code(), validation.message()));
+            case 404:
+                throw new ServiceResourceException();
+            case 500:
+                var internal = deserializeResponseBodyOrThrow(response, SERVICE_ERROR_RESPONSE_TYPE_REFERENCE);
+                throw new ServiceException(internal.message(), null);
+            default:
+                throw new ServiceClientException(response.statusCode(), response.uri().toString(), null);
         }
     }
 
@@ -97,6 +117,14 @@ public abstract class ServiceClient {
             return objectMapper.writeValueAsBytes(object);
         } catch (JsonProcessingException exception) {
             throw new ServiceClientException(exception);
+        }
+    }
+
+    private <T> T deserializeResponseBodyOrThrow(HttpResponse<byte[]> response, TypeReference<T> typeReference) {
+        try {
+            return objectMapper.readValue(response.body(), typeReference);
+        } catch (IOException exception) {
+            throw new ServiceClientException(response.statusCode(), response.uri().toString(), exception);
         }
     }
 }
