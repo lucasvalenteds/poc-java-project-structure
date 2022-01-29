@@ -66,7 +66,7 @@ class UserRepositoryTest {
     @Test
     @Order(1)
     void testInserting() {
-        var userRequest = UserTestBuilder.USER_REQUEST;
+        final var userRequest = UserTestBuilder.USER_REQUEST;
 
         userInserted = userRepository.insert(new UserTableInsert(userRequest.name(), userRequest.age()));
 
@@ -78,7 +78,7 @@ class UserRepositoryTest {
     @Test
     @Order(2)
     void testFindingById() {
-        var userFound = userRepository.findById(userInserted.id());
+        final var userFound = userRepository.findById(userInserted.id());
 
         assertEquals(userInserted, userFound);
     }
@@ -91,9 +91,9 @@ class UserRepositoryTest {
 
     @Test
     void testNameExists() {
-        var userInserted = userRepository.insert(new UserTableInsert("Mary Jane", 32));
+        final var userInserted = userRepository.insert(new UserTableInsert("Mary Jane", 32));
 
-        var exists = userRepository.existsByName(userInserted.firstName());
+        final var exists = userRepository.existsByName(userInserted.firstName());
 
         assertTrue(exists);
 
@@ -102,9 +102,9 @@ class UserRepositoryTest {
 
     @Test
     void testNameDoesNotExists() {
-        var name = "Edgar Brooks";
+        final var name = "Edgar Brooks";
 
-        var exists = userRepository.existsByName(name);
+        final var exists = userRepository.existsByName(name);
 
         assertFalse(exists);
     }
@@ -125,10 +125,10 @@ class UserRepositoryTest {
 
     @Test
     void testFindingAllUsersByName() {
-        var filter = new UserResponseFilter()
+        final var filter = new UserResponseFilter()
             .name(UserTestBuilder.USER_WITH_SAME_NAME);
 
-        var usersFound = userRepository.findAll(filter);
+        final var usersFound = userRepository.findAll(filter);
 
         assertThat(usersFound)
             .hasSize(2)
@@ -138,10 +138,10 @@ class UserRepositoryTest {
 
     @Test
     void testFindingAllUsersByAge() {
-        var filter = new UserResponseFilter()
+        final var filter = new UserResponseFilter()
             .age(UserTestBuilder.USER_WITH_SAME_AGE);
 
-        var usersFound = userRepository.findAll(filter);
+        final var usersFound = userRepository.findAll(filter);
 
         assertThat(usersFound)
             .hasSize(2)

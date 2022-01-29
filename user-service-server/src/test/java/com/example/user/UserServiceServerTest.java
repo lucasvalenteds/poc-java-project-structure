@@ -21,15 +21,15 @@ class UserServiceServerTest {
 
     @Test
     void testCreating() {
-        var userRequest = UserTestBuilder.USER_REQUEST;
-        var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var userRequest = UserTestBuilder.USER_REQUEST;
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
 
         Mockito.when(userRepository.existsByName(userRequest.name()))
             .thenReturn(false);
         Mockito.when(userRepository.insert(UserTestBuilder.USER_TABLE_INSERT))
             .thenReturn(UserTestBuilder.USER_TABLE);
 
-        var userCreated = userService.create(userRequest);
+        final var userCreated = userService.create(userRequest);
 
         assertEquals(userResponse, userCreated);
         Mockito.verify(userRepository, Mockito.times(1))
@@ -40,12 +40,12 @@ class UserServiceServerTest {
 
     @Test
     void testCreatingWithSameNameThrows() {
-        var userRequest = UserTestBuilder.USER_REQUEST;
+        final var userRequest = UserTestBuilder.USER_REQUEST;
 
         Mockito.when(userRepository.existsByName(userRequest.name()))
             .thenReturn(true);
 
-        var exception = assertThrows(
+        final var exception = assertThrows(
             ServiceValidationException.class,
             () -> userService.create(userRequest)
         );
@@ -59,7 +59,7 @@ class UserServiceServerTest {
 
     @Test
     void testRemoving() {
-        var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
 
         Mockito.doNothing()
             .when(userRepository).remove(userResponse.id());
@@ -72,13 +72,13 @@ class UserServiceServerTest {
 
     @Test
     void testRemovingWithUnknownIdThrows() {
-        var userResponse = UserTestBuilder.USER_RESPONSE;
-        var userId = userResponse.id();
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var userId = userResponse.id();
 
         Mockito.doThrow(new IncorrectResultSizeDataAccessException(1, 0))
             .when(userRepository).remove(userId);
 
-        var exception = assertThrows(
+        final var exception = assertThrows(
             ServiceResourceException.class,
             () -> userService.remove(userId)
         );
@@ -91,13 +91,13 @@ class UserServiceServerTest {
 
     @Test
     void testFindingById() {
-        var userResponse = UserTestBuilder.USER_RESPONSE;
-        var userTable = UserTestBuilder.USER_TABLE;
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var userTable = UserTestBuilder.USER_TABLE;
 
         Mockito.when(userRepository.findById(userTable.id()))
             .thenReturn(userTable);
 
-        var userFound = userService.findById(userTable.id());
+        final var userFound = userService.findById(userTable.id());
 
         assertEquals(userResponse, userFound);
         Mockito.verify(userRepository, Mockito.times(1))
@@ -106,13 +106,13 @@ class UserServiceServerTest {
 
     @Test
     void testFindingByUnknownIdThrows() {
-        var userResponse = UserTestBuilder.USER_RESPONSE;
-        var userId = userResponse.id();
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var userId = userResponse.id();
 
         Mockito.when(userRepository.findById(userId))
             .thenThrow(new IncorrectResultSizeDataAccessException(1));
 
-        var exception = assertThrows(
+        final var exception = assertThrows(
             ServiceResourceException.class,
             () -> userService.findById(userId)
         );
@@ -125,16 +125,16 @@ class UserServiceServerTest {
 
     @Test
     void testFindingAll() {
-        var filter = UserTestBuilder.USER_RESPONSE_FILTER;
-        var users = List.of(UserTestBuilder.USER_REQUESTS);
-        var amountOfUsers = Long.valueOf(users.size());
+        final var filter = UserTestBuilder.USER_RESPONSE_FILTER;
+        final var users = List.of(UserTestBuilder.USER_REQUESTS);
+        final var amountOfUsers = Long.valueOf(users.size());
 
         Mockito.when(userRepository.findAll(filter))
             .thenReturn(List.of(UserTestBuilder.USER_TABLE));
         Mockito.when(userRepository.count(filter))
             .thenReturn(amountOfUsers);
 
-        var serviceResponse = userService.findAll(filter);
+        final var serviceResponse = userService.findAll(filter);
 
         assertNotNull(serviceResponse.items());
         assertEquals(amountOfUsers, serviceResponse.total());

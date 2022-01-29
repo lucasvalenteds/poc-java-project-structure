@@ -17,8 +17,8 @@ class UserControllerTest {
 
     @Test
     void testCreating() {
-        var userRequest = UserTestBuilder.USER_REQUEST;
-        var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var userRequest = UserTestBuilder.USER_REQUEST;
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
         Mockito.when(userService.create(userRequest))
             .thenReturn(userResponse);
 
@@ -40,7 +40,7 @@ class UserControllerTest {
 
     @Test
     void testRemoving() {
-        var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
         Mockito.doNothing()
             .when(userService).remove(userResponse.id());
 
@@ -57,7 +57,7 @@ class UserControllerTest {
 
     @Test
     void testFindingById() {
-        var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
         Mockito.when(userService.findById(userResponse.id()))
             .thenReturn(userResponse);
 
@@ -77,9 +77,9 @@ class UserControllerTest {
 
     @Test
     void testFindingAll() {
-        var filter = UserTestBuilder.USER_RESPONSE_FILTER;
-        var userResponse = UserTestBuilder.USER_RESPONSE;
-        var serviceResponse = UserTestBuilder.SERVICE_RESPONSE_USERS;
+        final var filter = UserTestBuilder.USER_RESPONSE_FILTER;
+        final var userResponse = UserTestBuilder.USER_RESPONSE;
+        final var serviceResponse = UserTestBuilder.SERVICE_RESPONSE_USERS;
         Mockito.when(userService.findAll(filter))
             .thenReturn(serviceResponse);
 

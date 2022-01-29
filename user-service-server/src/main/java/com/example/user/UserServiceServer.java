@@ -25,8 +25,8 @@ public final class UserServiceServer implements UserService {
             throw new ServiceValidationException(UserServiceErrors.UserAlreadyExist);
         }
 
-        var userTableInsert = userMapper.map(userRequest);
-        var userTable = userRepository.insert(userTableInsert);
+        final var userTableInsert = userMapper.map(userRequest);
+        final var userTable = userRepository.insert(userTableInsert);
 
         return userMapper.map(userTable);
     }
@@ -43,7 +43,7 @@ public final class UserServiceServer implements UserService {
     @Override
     public UserResponse findById(UUID id) throws ServiceException {
         try {
-            var userTable = userRepository.findById(id);
+            final var userTable = userRepository.findById(id);
 
             return userMapper.map(userTable);
         } catch (IncorrectResultSizeDataAccessException exception) {
@@ -53,11 +53,11 @@ public final class UserServiceServer implements UserService {
 
     @Override
     public ServiceResponse<UserResponse> findAll(UserResponseFilter filter) throws ServiceException {
-        var users = userRepository.findAll(filter).stream()
+        final var users = userRepository.findAll(filter).stream()
             .map(userMapper::map)
             .collect(Collectors.toList());
 
-        var total = userRepository.count(filter);
+        final var total = userRepository.count(filter);
 
         return new ServiceResponse<>(users, total);
     }

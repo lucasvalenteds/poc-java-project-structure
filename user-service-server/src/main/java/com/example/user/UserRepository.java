@@ -23,14 +23,14 @@ public class UserRepository extends SQLRepository {
 
     @Transactional
     public UserTable insert(UserTableInsert userTableInsert) {
-        var userTable = new UserTable(UUID.randomUUID(), userTableInsert.firstName(), userTableInsert.age());
+        final var userTable = new UserTable(UUID.randomUUID(), userTableInsert.firstName(), userTableInsert.age());
 
-        var query = "insert into " + UserTable.TABLE + " (" + UserTable.COLUMNS + ") values (?, ?, ?)";
-        var objects = new Object[]{userTable.id(), userTable.firstName(), userTable.age()};
-        var types = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+        final var query = "insert into " + UserTable.TABLE + " (" + UserTable.COLUMNS + ") values (?, ?, ?)";
+        final var objects = new Object[]{userTable.id(), userTable.firstName(), userTable.age()};
+        final var types = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 
-        var rowsAffected = jdbcTemplate.update(query, objects, types);
-        var expectedRowsAffected = 1;
+        final var rowsAffected = jdbcTemplate.update(query, objects, types);
+        final var expectedRowsAffected = 1;
         if (rowsAffected != expectedRowsAffected) {
             throw new IncorrectResultSizeDataAccessException(expectedRowsAffected, rowsAffected);
         }
@@ -40,43 +40,43 @@ public class UserRepository extends SQLRepository {
 
     @Transactional
     public void remove(UUID id) {
-        var userResponse = findById(id);
+        final var userResponse = findById(id);
 
-        var query = "delete from " + UserTable.TABLE + " where " + UserTable.ID + " = ?";
-        var objects = new Object[]{userResponse.id()};
-        var types = new int[]{Types.VARCHAR};
+        final var query = "delete from " + UserTable.TABLE + " where " + UserTable.ID + " = ?";
+        final var objects = new Object[]{userResponse.id()};
+        final var types = new int[]{Types.VARCHAR};
 
         int rowsAffected = jdbcTemplate.update(query, objects, types);
-        var expectedRowsAffected = 1;
+        final var expectedRowsAffected = 1;
         if (rowsAffected != expectedRowsAffected) {
             throw new IncorrectResultSizeDataAccessException(expectedRowsAffected, rowsAffected);
         }
     }
 
     public UserTable findById(UUID id) {
-        var query = "select " + UserTable.COLUMNS + " from " + UserTable.TABLE + " where " + UserTable.ID + " = ?";
+        final var query = "select " + UserTable.COLUMNS + " from " + UserTable.TABLE + " where " + UserTable.ID + " = ?";
 
-        var objects = new Object[]{id};
-        var types = new int[]{Types.VARCHAR};
+        final var objects = new Object[]{id};
+        final var types = new int[]{Types.VARCHAR};
 
         return jdbcTemplate.queryForObject(query, objects, types, UserRepository::mapRow);
     }
 
     public List<UserTable> findAll(UserResponseFilter filter) {
-        var query = "select " + UserTable.COLUMNS + " from " + UserTable.TABLE;
+        final var query = "select " + UserTable.COLUMNS + " from " + UserTable.TABLE;
 
-        var filters = new StringBuilder();
-        var objects = new ArrayList<>();
-        var types = new ArrayList<Integer>();
+        final var filters = new StringBuilder();
+        final var objects = new ArrayList<>();
+        final var types = new ArrayList<Integer>();
         this.writeQueryFilters(filters, objects, types, filter);
 
-        var sortingAndPaging = new StringBuilder();
+        final var sortingAndPaging = new StringBuilder();
         super.writePagingClause(sortingAndPaging, filter);
         super.writeSortingClause(sortingAndPaging, filter);
 
-        var sql = query + filters + sortingAndPaging;
-        var primitiveObjects = objects.toArray();
-        var primitiveTypes = types.stream()
+        final var sql = query + filters + sortingAndPaging;
+        final var primitiveObjects = objects.toArray();
+        final var primitiveTypes = types.stream()
             .mapToInt(it -> it)
             .toArray();
 
@@ -84,19 +84,19 @@ public class UserRepository extends SQLRepository {
     }
 
     public Long count(UserResponseFilter filter) {
-        var query = "select count(1) from " + UserTable.TABLE;
+        final var query = "select count(1) from " + UserTable.TABLE;
 
-        var filters = new StringBuilder();
-        var objects = new ArrayList<>();
-        var types = new ArrayList<Integer>();
+        final var filters = new StringBuilder();
+        final var objects = new ArrayList<>();
+        final var types = new ArrayList<Integer>();
         this.writeQueryFilters(filters, objects, types, filter);
 
-        var paging = new StringBuilder();
+        final var paging = new StringBuilder();
         super.writePagingClause(paging, filter);
 
-        var sql = query + filters + paging;
-        var primitiveObjects = objects.toArray();
-        var primitiveTypes = types.stream()
+        final var sql = query + filters + paging;
+        final var primitiveObjects = objects.toArray();
+        final var primitiveTypes = types.stream()
             .mapToInt(it -> it)
             .toArray();
 
@@ -104,10 +104,10 @@ public class UserRepository extends SQLRepository {
     }
 
     public Boolean existsByName(String name) {
-        var query = "select exists ( select 1 from " + UserTable.TABLE + " where " + UserTable.FIRST_NAME + " = ?)";
+        final var query = "select exists ( select 1 from " + UserTable.TABLE + " where " + UserTable.FIRST_NAME + " = ?)";
 
-        var objects = new Object[]{name};
-        var types = new int[]{Types.VARCHAR};
+        final var objects = new Object[]{name};
+        final var types = new int[]{Types.VARCHAR};
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, objects, types, Boolean.class));
     }
@@ -116,7 +116,7 @@ public class UserRepository extends SQLRepository {
                                    List<Object> objects,
                                    List<Integer> types,
                                    UserResponseFilter filter) {
-        var filters = new ArrayList<String>();
+        final var filters = new ArrayList<String>();
 
         if (filter.getName() != null) {
             filters.add(UserTable.FIRST_NAME + " like ?");
