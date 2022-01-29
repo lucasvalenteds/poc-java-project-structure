@@ -18,4 +18,8 @@ dependencies {
     testImplementation("org.springframework", "spring-test", properties["version.spring.framework"].toString())
     testImplementation("com.jayway.jsonpath", "json-path", properties["version.jsonpath"].toString())
     testImplementation("com.github.tomakehurst", "wiremock-jre8", properties["version.wiremock"].toString())
+
+    // Web Server
+    implementation("org.eclipse.jetty", "jetty-servlets", properties["version.jetty"].toString())
+    implementation("org.eclipse.jetty", "jetty-webapp", properties["version.jetty"].toString())
 }

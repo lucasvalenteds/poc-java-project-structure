@@ -1,8 +1,3 @@
-plugins {
-    id("org.springframework.boot") version "2.5.6"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-}
-
 dependencies {
     implementation(project(":user-service-contract"))
     implementation(project(":user-service-shared"))
@@ -28,8 +23,6 @@ dependencies {
     testImplementation("com.jayway.jsonpath", "json-path", properties["version.jsonpath"].toString())
 
     // Web Server
-    implementation("org.springframework.boot", "spring-boot-starter-web") {
-        exclude("org.springframework.boot", "spring-boot-starter-tomcat")
-    }
-    implementation("org.springframework.boot", "spring-boot-starter-jetty")
+    implementation("org.eclipse.jetty", "jetty-servlets", properties["version.jetty"].toString())
+    implementation("org.eclipse.jetty", "jetty-webapp", properties["version.jetty"].toString())
 }

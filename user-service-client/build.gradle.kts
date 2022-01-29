@@ -10,12 +10,6 @@ dependencies {
         properties["version.jackson"].toString()
     )
 
-    testImplementation("org.eclipse.jetty", "jetty-webapp", properties["version.jetty"].toString())
-    testImplementation(project(":user-service-shared"))
-    testImplementation(project(":user-service-server")) {
-        exclude("org.springframework.boot")
-    }
-
     // Persistence
     testImplementation("org.springframework.data", "spring-data-jdbc", properties["version.spring.data"].toString())
     testImplementation("mysql", "mysql-connector-java", properties["version.mysql"].toString())
@@ -27,4 +21,9 @@ dependencies {
     testImplementation("org.springframework", "spring-context", properties["version.spring.framework"].toString())
     testImplementation("org.springframework", "spring-webmvc", properties["version.spring.framework"].toString())
     testImplementation("org.springframework", "spring-test", properties["version.spring.framework"].toString())
+
+    // Web Server
+    testImplementation("org.eclipse.jetty", "jetty-webapp", properties["version.jetty"].toString())
+    testImplementation(project(":user-service-shared"))
+    testImplementation(project(":user-service-server"))
 }

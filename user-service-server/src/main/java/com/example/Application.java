@@ -1,11 +1,14 @@
 package com.example;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.example.shared.ServerConfiguration;
+import org.eclipse.jetty.server.Server;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-@SpringBootApplication
 public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+
+    public static void main(String[] args) throws Exception {
+        final var context = new AnnotationConfigApplicationContext(ServerConfiguration.class);
+        final var server = context.getBean(Server.class);
+        server.start();
     }
 }

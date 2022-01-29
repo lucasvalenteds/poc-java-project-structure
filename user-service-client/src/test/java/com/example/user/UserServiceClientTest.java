@@ -2,6 +2,7 @@ package com.example.user;
 
 import com.example.shared.ClientTestConfiguration;
 import com.example.shared.DatabaseConfiguration;
+import com.example.shared.ServerConfiguration;
 import com.example.shared.ServiceConfiguration;
 import com.example.shared.ServiceResourceException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
@@ -27,9 +30,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@SpringJUnitWebConfig({ClientTestConfiguration.class, DatabaseConfiguration.class, ServiceConfiguration.class})
+@SpringJUnitWebConfig({
+    ClientTestConfiguration.class,
+    DatabaseConfiguration.class,
+    ServerConfiguration.class,
+    ServiceConfiguration.class
+})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceClientTest {
+
+    @DynamicPropertySource
+    public static void serverProperties(DynamicPropertyRegistry registry) {
+        registry.add("server.port", () -> 8080);
+    }
 
     private static UserService userService;
     private static UUID userId;
