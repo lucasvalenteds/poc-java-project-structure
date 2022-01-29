@@ -1,3 +1,7 @@
+plugins {
+    application
+}
+
 dependencies {
     implementation(project(":user-service-contract"))
     implementation(project(":user-service-shared"))
@@ -25,4 +29,8 @@ dependencies {
     // Web Server
     implementation("org.eclipse.jetty", "jetty-servlets", properties["version.jetty"].toString())
     implementation("org.eclipse.jetty", "jetty-webapp", properties["version.jetty"].toString())
+}
+
+configure<JavaApplication> {
+    mainClass.set("com.example.Application")
 }

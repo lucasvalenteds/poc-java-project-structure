@@ -6,7 +6,7 @@ The goal is to create a template for back-end services for projects based on Ser
 
 The demo project is a REST API implemented in Java with endpoints to manager users. It allows clients to create, delete, find one and find many users persisted on a SQL database. The project contains two main Java packages: one for the service domain specific code and another one for shared code. The shared code is designed to increase reuse and reduce effort to implement the code in the domain package.
 
-The REST API is implemented using Spring Framework MVC and deployed in an embedded Jetty instance configured via Spring Boot. Its interface is based on HTTP protocol and the payload is based on JSON standard. The configuration connects to a MySQL instance and run database migrations automatically via Flyway when running locally for convenience. Also, all the configuration is provided via environment variables with fallback to default values present in a properties file. The code is mostly tested using unit tests using JUnit, Mockito and AssertJ, but there are integration tests using Testcontainers and Wiremock. No manual configuration is required to run automated tests.
+The REST API is implemented using Spring Framework MVC and deployed in an embedded Jetty. Its interface is based on HTTP protocol and the payload is based on JSON standard. The configuration connects to a MySQL instance and run database migrations automatically via Flyway when running locally for convenience. Also, all the configuration is provided via environment variables with fallback to default values present in a properties file. The code is mostly tested using unit tests using JUnit, Mockito and AssertJ, but there are integration tests using Testcontainers and Wiremock. No manual configuration is required to run automated tests.
 
 ## Project structure
 
@@ -31,7 +31,7 @@ Beyond Java code, we also have Gradle build scripts written using Kotlin DSL. We
 | Description | Command |
 | :--- | :--- |
 | Run tests | `./gradlew test` |
-| Run application | `./gradlew bootRun` |
+| Run application | `./gradlew run` |
 
 > The application requires the database to be provisioned beforehand
 
